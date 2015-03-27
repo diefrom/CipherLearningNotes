@@ -23,6 +23,7 @@ enum {
  * param[1]:output: the enciphered or deciphered text (not null check it)
  * param[2]:input:  the key value(0-25, not check it)
  * param[3]:input:  the way value('d' or 'e', check it)
+ * return: 0 success; PARAM_ERROR(-2) parameters error
 */
 int encode_decode(char const *, char *, int, char );
 
@@ -69,10 +70,6 @@ int main(int argc, char **argv){
     if (ret == PARAM_ERROR){
         printf("Error parse!\n");
         exit(PARAM_ERROR);
-    }
-    else if (ret == INTERNAL_ERROR){
-        printf("Error parse!\n");
-        exit(INTERNAL_ERROR);
     }
 
     //print the result
