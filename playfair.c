@@ -88,11 +88,18 @@ int main(int argc, char **argv)
     printf("plaintext:%s\n", old_text);
     encode_sentence_ret = encode_sentence(new_text, old_text);
     if (encode_sentence_ret != SUCCESS){
+        free(new_text);
+        if (new_text != NULL){
+            new_text = NULL;
+        }
         return encode_sentence_ret;
     }
     printf("ciphertext:%s\n", new_text);
 
     free(new_text);
+    if (new_text != NULL){
+        new_text = NULL;
+    }
 
     return SUCCESS;
 }
@@ -303,6 +310,10 @@ int encode_sentence(char *ciphertext, char *plaintext)
 
     encode_word_ret = encode_word(ciphertext, new_plaintext);
     if (encode_word_ret != SUCCESS){
+        free(new_plaintext);
+        if (new_plaintext != NULL){
+            new_plaintext = NULL;
+        }
         return encode_word_ret;
     }
 #endif
@@ -335,7 +346,9 @@ int encode_sentence(char *ciphertext, char *plaintext)
 #endif
 
     free(new_plaintext);
-    new_plaintext = NULL;
+    if (new_plaintext != NULL){
+       new_plaintext = NULL;
+    }
     
 
     return SUCCESS;
