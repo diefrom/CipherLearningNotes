@@ -124,6 +124,14 @@ int main(int argc, char **argv)
     new_fd = fopen(argv[2], "w");
     if (old_fd==NULL || new_fd==NULL){
         print_error(__LINE__-1, INTERNAL_ERROR_FILE_OPEN);
+        free(old_text);
+        if (old_text != NULL){
+            old_text = NULL;
+        }
+        free(new_text);
+        if (new_text != NULL){
+            new_text = NULL;
+        }
         return INTERNAL_ERROR_FILE_OPEN;
     }
 
@@ -135,13 +143,27 @@ int main(int argc, char **argv)
     }*/
     i_ret = decode_word(new_text, old_text);
     if (i_ret != SUCCESS){
+        free(old_text);
+        if (old_text != NULL){
+            old_text = NULL;
+        }
+        free(new_text);
+        if (new_text != NULL){
+            new_text = NULL;
+        }
         return i_ret;
     }
 
     ui_len = fwrite(new_text, 1, strlen(new_text), new_fd);
 
-
+    free(old_text);
+    if (old_text != NULL){
+        old_text = NULL;
+    }
     free(new_text);
+    if (new_text != NULL){
+        new_text = NULL;
+    }
 
     return SUCCESS;
 }
@@ -337,6 +359,7 @@ int decode_word(char *plaintext, char *ciphertext)
     int second_y = 0;
     int signle_coordinate = 0;
     int tmp_len = 0;
+    int tmp_CRLF_len = 0;
     char *tmp_plaintext = NULL;
 
     tmp_plaintext = (char *)malloc(ciphertext_len + 1);
@@ -349,11 +372,17 @@ int decode_word(char *plaintext, char *ciphertext)
     while (*ciphertext != '\0'){
         if (*ciphertext == 10){
             ciphertext++;
+            tmp_CRLF_len++;
             continue;
         }
         get_coordinate_ret = 
             get_coordinate(coordinate, *ciphertext, *(ciphertext+1));
         if (get_coordinate_ret != SUCCESS){
+            tmp_plaintext -= (tmp_CRLF_len+tmp_len);
+            free(tmp_plaintext);
+            if (tmp_plaintext != NULL){
+                tmp_plaintext = NULL;
+            }
             return get_coordinate_ret;
         }
 
@@ -410,7 +439,9 @@ int decode_word(char *plaintext, char *ciphertext)
     }
     tmp_plaintext -= tmp_len;
     free(tmp_plaintext);
-    tmp_plaintext = NULL;
+    if (tmp_plaintext != NULL){
+       tmp_plaintext = NULL;
+    }
 
     return SUCCESS;
 }
@@ -466,6 +497,10 @@ int encode_sentence(char *ciphertext, char *plaintext)
 
     encode_word_ret = encode_word(ciphertext, new_plaintext);
     if (encode_word_ret != SUCCESS){
+        free(new_plaintext);
+        if (new_plaintext != NULL){
+            new_plaintext = NULL;
+        }
         return encode_word_ret;
     }
 #endif
@@ -498,7 +533,9 @@ int encode_sentence(char *ciphertext, char *plaintext)
 #endif
 
     free(new_plaintext);
-    new_plaintext = NULL;
+    if (new_plaintext != NULL){
+        new_plaintext = NULL;
+    }
     
 
     return SUCCESS;
